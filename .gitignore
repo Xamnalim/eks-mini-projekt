@@ -1,0 +1,8 @@
+# wirtualne środowisko
+venv
+
+# python cache
+__pycache__
+
+# pliki konfiguracyjne vscode
+.vscode
