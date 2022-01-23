@@ -1,11 +1,10 @@
-import os
-import time
+from typing import Optional
 
-import psycopg2
-from fastapi import FastAPI, status
+from fastapi import Depends, FastAPI, status
 from fastapi.exceptions import HTTPException
-from psycopg2.extras import RealDictCursor
 from pydantic import BaseModel
+
+from . import database as db
 
 app = FastAPI()
 
@@ -14,24 +13,13 @@ class Post(BaseModel):
     signature: str
     token: str
 
-
-# Database connection
-while True:
+def get_db():
+    conn = db.get_db_conn()
     try:
-        conn = psycopg2.connect(
-            host=os.getenv("DB_HOST"),
-            port=os.getenv("DB_PORT"),
-            database=os.getenv("DB_NAME"),
-            user=os.getenv("DB_USER"),
-            password=os.getenv("DB_PASS"),
-            cursor_factory=RealDictCursor,
-        )
-        cursor = conn.cursor()
-        print("Database connection was successfull!")
-        break
-    except Exception as error:
-        print("Connection to database failed!\n", error)
-        time.sleep(3)
+        yield conn
+    finally:
+        conn.close()
+    
 
 
 @app.get("/")
@@ -39,52 +27,32 @@ def root():
     return {"message": "Hello World"}
 
 @app.get("/posts")
-def get_posts():
-    cursor.execute(
-    """
-    SELECT * FROM post
-    """,
-    )
-    posts = cursor.fetchall()
+def get_posts(db_conn: db.connection = Depends(get_db)):
+    posts = db.get_posts(db_conn.cursor())
 
     return {"data": posts}
 
 
 @app.post("/posts", status_code=status.HTTP_201_CREATED)
-def create_post(post: Post):      
-    token_valid = check_token(post.token)
+def create_post(post: Post, db_conn: db.connection = Depends(get_db)):
+    curs = db_conn.cursor()
+
+    token_valid = db.check_token(curs, post.token)
     if not token_valid:
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=f"token: '{post.token}' is invalid"
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=f"invalid token"
         )
 
-    cursor.execute(
-    """
-    INSERT INTO post (content, signature)
-    VALUES (%s, %s)
-    RETURNING *
-    """, 
-    (post.content, post.signature),
-    )
-    new_post = cursor.fetchone()
-    conn.commit()
-
-    delete_token(post.token)
+    new_post = db.create_post(curs, post.content, post.signature)
+    db.delete_token(curs, post.token)
 
     return {"data": new_post}
 
 
 @app.get("/posts/{id}")
-def get_post(id: int):
-    cursor.execute(
-    """
-    SELECT * FROM post WHERE id=%s
-    """,
-    (str(id),),
-    )
-
-    post = cursor.fetchone()
+def get_post(id: int, db_conn: db.connection = Depends(get_db)):
+    post = db.get_post(db_conn.cursor(), id)
 
     if post is None:
         raise HTTPException(
@@ -93,25 +61,3 @@ def get_post(id: int):
         )
 
     return {"post_detail": post}
-
-@app.get("tokens")
-
-
-def check_token(token: str) -> bool:
-    cursor.execute(
-    """
-    SELECT * FROM token WHERE token=%s
-    """,
-    (token,),
-    )
-    token_db = cursor.fetchone()
-    
-    return token_db is not None
-
-def delete_token(token: str):
-    cursor.execute(
-    """
-    DELETE FROM token WHERE token=%s
-    """,
-    (token,),
-    )
