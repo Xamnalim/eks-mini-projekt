@@ -18,37 +18,34 @@ def get_db_conn() -> connection:
 # POST
 
 def get_posts(curs: cursor) -> dict:
-    with curs:
-            curs.execute(
-            """
-            SELECT * FROM post
-            """,
-            )
-            return curs.fetchall()
+    curs.execute(
+    """
+    SELECT * FROM post
+    """,
+    )
+    return curs.fetchall()
 
 def create_post(curs: cursor, content: str, signature: str) -> dict:
-    with curs:
-        curs.execute(
-        """
-        INSERT INTO post (content, signature)
-        VALUES (%s, %s)
-        RETURNING *
-        """, 
-        (content, signature),
-        )
-        post = curs.fetchone()
+    curs.execute(
+    """
+    INSERT INTO post (content, signature)
+    VALUES (%s, %s)
+    RETURNING *
+    """, 
+    (content, signature),
+    )
+    post = curs.fetchone()
     
     return post
 
 def get_post(curs: cursor, id: int) -> dict:
-    with curs:
-        curs.execute(
-        """
-        SELECT * FROM post WHERE id=%s
-        """,
-        (str(id),),
-        )
-        post = curs.fetchone()
+    curs.execute(
+    """
+    SELECT * FROM post WHERE id=%s
+    """,
+    (str(id),),
+    )
+    post = curs.fetchone()
 
     return post
 
@@ -56,13 +53,12 @@ def get_post(curs: cursor, id: int) -> dict:
 # TOKEN
 
 def get_tokens(curs: cursor) -> dict:
-    with curs:
-        curs.execute(
-        """
-        SELECT * FROM token
-        """,
-        )
-        tokens = curs.fetchall()
+    curs.execute(
+    """
+    SELECT * FROM token
+    """,
+    )
+    tokens = curs.fetchall()
 
     return tokens
 
@@ -80,22 +76,20 @@ def insert_token(curs: cursor, token: str) -> dict:
     return new_token
 
 def check_token(curs: cursor, token: str) -> bool:
-    with curs:
-        curs.execute(
-        """
-        SELECT * FROM token WHERE token=%s
-        """,
-        (token,),
-        )
-        token_db = curs.fetchone()
+    curs.execute(
+    """
+    SELECT * FROM token WHERE token=%s
+    """,
+    (token,),
+    )
+    token_db = curs.fetchone()
     
     return token_db is not None
 
 def delete_token(curs: cursor, token: str):
-    with curs:
-        curs.execute(
-        """
-        DELETE FROM token WHERE token=%s
-        """,
-        (token,),
-        )
+    curs.execute(
+    """
+    DELETE FROM token WHERE token=%s
+    """,
+    (token,),
+    )
