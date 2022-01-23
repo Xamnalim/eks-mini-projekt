@@ -1,3 +1,7 @@
+# zmienne środowiskowe
+.env*
+!.env.example
+
 # wirtualne środowisko
 venv
 
