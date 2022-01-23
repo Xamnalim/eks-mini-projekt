@@ -52,6 +52,13 @@ def get_posts():
 
 @app.post("/posts", status_code=status.HTTP_201_CREATED)
 def create_post(post: Post):      
+    token_valid = check_token(post.token)
+    if not token_valid:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=f"token: '{post.token}' is invalid"
+        )
+
     cursor.execute(
     """
     INSERT INTO post (content, signature)
@@ -60,9 +67,10 @@ def create_post(post: Post):
     """, 
     (post.content, post.signature),
     )
-
     new_post = cursor.fetchone()
     conn.commit()
+
+    delete_token(post.token)
 
     return {"data": new_post}
 
@@ -85,3 +93,25 @@ def get_post(id: int):
         )
 
     return {"post_detail": post}
+
+@app.get("tokens")
+
+
+def check_token(token: str) -> bool:
+    cursor.execute(
+    """
+    SELECT * FROM token WHERE token=%s
+    """,
+    (token,),
+    )
+    token_db = cursor.fetchone()
+    
+    return token_db is not None
+
+def delete_token(token: str):
+    cursor.execute(
+    """
+    DELETE FROM token WHERE token=%s
+    """,
+    (token,),
+    )
