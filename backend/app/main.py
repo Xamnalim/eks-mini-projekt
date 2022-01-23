@@ -2,10 +2,17 @@ import os
 import time
 
 import psycopg2
-from fastapi import FastAPI
+from fastapi import FastAPI, status
+from fastapi.exceptions import HTTPException
 from psycopg2.extras import RealDictCursor
+from pydantic import BaseModel
 
 app = FastAPI()
+
+class Post(BaseModel):
+    content: str
+    signature: str
+    token: str
 
 
 # Database connection
@@ -30,3 +37,51 @@ while True:
 @app.get("/")
 def root():
     return {"message": "Hello World"}
+
+@app.get("/posts")
+def get_posts():
+    cursor.execute(
+    """
+    SELECT * FROM post
+    """,
+    )
+    posts = cursor.fetchall()
+
+    return {"data": posts}
+
+
+@app.post("/posts", status_code=status.HTTP_201_CREATED)
+def create_post(post: Post):      
+    cursor.execute(
+    """
+    INSERT INTO post (content, signature)
+    VALUES (%s, %s)
+    RETURNING *
+    """, 
+    (post.content, post.signature),
+    )
+
+    new_post = cursor.fetchone()
+    conn.commit()
+
+    return {"data": new_post}
+
+
+@app.get("/posts/{id}")
+def get_post(id: int):
+    cursor.execute(
+    """
+    SELECT * FROM post WHERE id=%s
+    """,
+    (str(id),),
+    )
+
+    post = cursor.fetchone()
+
+    if post is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"post with id: {id} was not found"
+        )
+
+    return {"post_detail": post}
