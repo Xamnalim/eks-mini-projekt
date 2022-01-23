@@ -55,6 +55,30 @@ def get_post(curs: cursor, id: int) -> dict:
 
 # TOKEN
 
+def get_tokens(curs: cursor) -> dict:
+    with curs:
+        curs.execute(
+        """
+        SELECT * FROM token
+        """,
+        )
+        tokens = curs.fetchall()
+
+    return tokens
+
+def insert_token(curs: cursor, token: str) -> dict:
+    curs.execute(
+    """
+    INSERT INTO token (token)
+    VALUES (%s)
+    RETURNING *
+    """,
+    (token,),
+    )
+    new_token = curs.fetchone()
+
+    return new_token
+
 def check_token(curs: cursor, token: str) -> bool:
     with curs:
         curs.execute(
