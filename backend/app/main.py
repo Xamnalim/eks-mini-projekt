@@ -4,9 +4,10 @@ import random
 from fastapi import Depends, FastAPI, status
 from fastapi.exceptions import HTTPException
 from psycopg2.errors import UniqueViolation
+import uvicorn
 
-from . import database as db
-from . models import Post, TokenRequest
+import database as db
+from models import Post, TokenRequest
 
 app = FastAPI()
 
@@ -109,3 +110,6 @@ def generate_tokens(token_req: TokenRequest, db_conn: db.connection = Depends(ge
 
 def validate_admin_pass(password: str) -> bool:
     return password == os.getenv("ADMIN_PASS")
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="localhost", port=(int(os.getenv("APP_PORT") or 8000)))
