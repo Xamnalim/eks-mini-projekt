@@ -3,6 +3,7 @@ import random
 
 from fastapi import Depends, FastAPI, status
 from fastapi.exceptions import HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from psycopg2.errors import UniqueViolation
 import uvicorn
 
@@ -11,6 +12,12 @@ from models import Post, TokenRequest
 
 app = FastAPI()
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 def get_db():
     conn = db.get_db_conn()
