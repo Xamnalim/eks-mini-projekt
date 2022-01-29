@@ -3,36 +3,32 @@ import NewPostForm from "../components/NewPostForm";
 import Typography from "@mui/material/Typography";
 import PostList from "../components/PostList";
 import { useState, useEffect } from "react";
+import { fetchPosts } from "../apis/eks-be-api";
+import { useSnackbar } from 'notistack';
 
-
-const post1 = {
-  id: 1,
-  content: "Post 1",
-  signature: "Jan Kowalski"
-}
-
-const post2 = {
-  id: 2,
-  content: "Post 2",
-  signature: "Janusz Tracz"
-}
-
-const post3 = {
-  id: 3,
-  content: "Post 3",
-  signature: "Marcin Zygman"
-}
-
-const mockedPosts = [post1, post2, post3];
 
 function GuestBook() {
 
-  const [posts, setPosts] = useState(mockedPosts);
+  const [posts, setPosts] = useState([]);
+  const { enqueueSnackbar } = useSnackbar();
+
+  useEffect(() => {
+    fetchPosts()
+      .then((data) => {
+        data.sort((a, b) => (b.id - a.id));
+        setPosts(data);
+      })
+      .catch(() => enqueueSnackbar("Unable to fetch API", { variant: "error"}));
+  }, []);
+
+  function addNewPost(post) {
+    setPosts([post, ...posts]);
+  }
 
   return (
     <Container maxWidth="sm">
       <Typography variant="h3">Weselna księga gości</Typography>
-        <NewPostForm />
+        <NewPostForm onNewPost={addNewPost} />
         <PostList title="Nasi goście:" posts={posts}/>
     </Container>
   );
