@@ -1,4 +1,5 @@
 import os
+import sys
 import random
 
 from fastapi import Depends, FastAPI, status
@@ -115,5 +116,25 @@ def generate_tokens(token_req: TokenRequest, db_conn: db.connection = Depends(ge
 def validate_admin_pass(password: str) -> bool:
     return password == os.getenv("ADMIN_PASS")
 
+def check_env_vars():
+    required_env_vars = [
+        "DB_HOST",
+        "DB_PORT",
+        "DB_NAME",
+        "DB_USER",
+        "DB_PASS",
+        "ADMIN_PASS",
+        "APP_PORT",
+    ]
+
+    for env_var in required_env_vars:
+        if os.getenv(env_var) is None:
+            print(
+                f"Environment variable {env_var} is missing.",
+                "Please supply it and try again."
+            )
+            sys.exit(1)
+
 if __name__ == "__main__":
+    check_env_vars()
     uvicorn.run(app, host="localhost", port=(int(os.getenv("APP_PORT") or 8000)))
