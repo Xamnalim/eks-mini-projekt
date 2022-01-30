@@ -9,4 +9,4 @@ class Post(BaseModel):
 
 class TokenRequest(BaseModel):
     password: str
-    amount: Optional[int] = Field(gt=0, le=20)
+    amount: Optional[int] = Field(ge=0, le=20)

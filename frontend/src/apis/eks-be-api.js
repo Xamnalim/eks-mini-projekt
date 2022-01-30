@@ -2,15 +2,8 @@ const getEksBackendIp = () => {
   return `http://${process.env.REACT_APP_EKS_BE_IP}:${process.env.REACT_APP_EKS_BE_PORT}`
 }
 
-// const fetchPosts = async () => {
-//   const ip = getEksBackendIp()
-//   const { data: { data } } = await axios.get(`${ip}/posts`);
-  
-//   return data;
-// }
-
 const fetchPosts = async () => {
-  const ip = getEksBackendIp()
+  const ip = getEksBackendIp();
   const resp = await fetch(`${ip}/posts`);
   const { data } = await resp.json();
   
@@ -30,7 +23,7 @@ const createPost = async (content, signature, token) => {
     );
 
     if (res.status === 401) {
-      const err = new Error("Podany token jest nieaktulany!");
+      const err = new Error("Podane hasło jest nieaktualne!");
       err.token_err = true;
       throw err;
     }
@@ -44,4 +37,32 @@ const createPost = async (content, signature, token) => {
   }
 }
 
-export { fetchPosts, createPost };
+const createTokens = async (password, amount) => {
+  const ip = getEksBackendIp()
+  try {
+    const res = await fetch(`${ip}/tokens`, {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ password, amount })
+      }
+    );
+
+    if (res.status === 401) {
+      const err = new Error("Podane hasło jest nieprawidłowe!");
+      err.token_err = true;
+      throw err;
+    }
+
+    return await res.json();
+  } catch (e) {
+    throw new Error(e.token_err ? e.message : "Nie udało się utworzyć tokenów");
+  }
+}
+
+const fetchTokens = async (password) => {
+  return await createTokens(password, 0);
+}
+
+export { fetchPosts, createPost, fetchTokens, createTokens };

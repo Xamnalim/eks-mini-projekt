@@ -94,24 +94,21 @@ def generate_tokens(token_req: TokenRequest, db_conn: db.connection = Depends(ge
             detail="supplied password is incorrect"
         )
 
-    if token_req.amount is None:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="amount of tokens to generate not supplied"
-        )
-
     curs = db_conn.cursor()
-    tokens = []
+    tokens = db.get_tokens(curs)
 
-    while len(tokens) < token_req.amount:
-        token = random.randint(100_000, 999_999)
-        
-        try:
-            new_token = db.insert_token(curs, str(token))
-        except UniqueViolation:
-            continue
-        else:
-            tokens.append(new_token)
+    if token_req.amount > 0:
+        new_tokens = []
+        while len(new_tokens) < token_req.amount:
+            token = random.randint(100_000, 999_999)
+            
+            try:
+                new_token = db.insert_token(curs, str(token))
+            except UniqueViolation:
+                continue
+            else:
+                new_tokens.append(new_token)
+        tokens = [*tokens, *new_tokens]
 
     return {"data": tokens}
 

@@ -1,73 +1,65 @@
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid";
-import { createPost } from "../apis/eks-be-api";
+import { createTokens } from "../apis/eks-be-api";
 import { useSnackbar } from 'notistack';
 
 
 
-export default function NewPostForm(props) {
+export default function AdminForm(props) {
   const { enqueueSnackbar } = useSnackbar();
 
   async function handleSubmit(e) {
     e.preventDefault()
-    const [ content, signature, token ] = Array.from(e.target)
+    const [amount, password] = Array.from(e.target)
       .filter(el => el instanceof HTMLInputElement)
       .map(input => input.value);
     try {
-      const { data } = await createPost(content, signature, token);
-      props.onNewPost(data);
-      enqueueSnackbar("Wpis został utworzony", { variant: "success"});
+      const { data } = await createTokens(password, amount);
+      console.log(data);
+      props.onSubmit(data);
+      enqueueSnackbar(`Operacja przebiegła pomyślnie!`, { variant: "success" });
     } catch (e) {
-      enqueueSnackbar(e.message, { variant: "error"});
+      enqueueSnackbar(e.message, { variant: "error" });
     }
   }
 
   return (
     <form onSubmit={handleSubmit}>
-      <Grid 
+      <Grid
         container
         spacing={2}
       >
-        <Grid item xs={12}>
+        <Grid item xs={6}>
           <TextField
             required
-            id="content"
-            name="content"
-            label="Napisz coś miłego"
+            id="amount"
+            name="amount"
+            label="Ilość tokenów"
             fullWidth
             variant="standard"
-            autoComplete="off"
-          />
-        </Grid>
-        <Grid item xs={8}>
-          <TextField
-            required
-            id="signature"
-            name="signature"
-            label="Podpis"
-            fullWidth
-            variant="standard"
-            autoComplete="off"
+            defaultValue={0}
+            // inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+            type="number"
           />
         </Grid>
         <Grid item xs={4}>
           <TextField
             required
-            id="token"
-            name="token"
+            id="password"
+            name="password"
             label="Hasło"
             fullWidth
             variant="standard"
+            type="password"
           />
         </Grid>
         <Grid item xs={12}>
           <Button variant="contained" type="submit">
-            Dodaj wpis
+            Generuj tokeny
           </Button>
         </Grid>
       </Grid>
     </form>
-    
   );
 }
