@@ -123,17 +123,22 @@ def check_env_vars():
         "DB_NAME",
         "DB_USER",
         "DB_PASS",
-        "ADMIN_PASS",
-        "APP_PORT",
+        "ADMIN_PASS"
     ]
+    missing_env_vars = ""
 
     for env_var in required_env_vars:
         if os.getenv(env_var) is None:
-            print(
-                f"Environment variable {env_var} is missing.",
-                "Please supply it and try again."
-            )
-            sys.exit(1)
+            missing_env_vars = missing_env_vars + env_var + "\n"
+    
+    if len(missing_env_vars) > 0:
+        print(
+            "The following environment variables are MISSING:",
+            missing_env_vars,
+            "Please supply them and try again.",
+            sep="\n"
+        )
+        sys.exit(1)
 
 if __name__ == "__main__":
     check_env_vars()
