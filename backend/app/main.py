@@ -142,4 +142,4 @@ def check_env_vars():
 
 if __name__ == "__main__":
     check_env_vars()
-    uvicorn.run(app, host="localhost", port=(int(os.getenv("APP_PORT") or 8000)))
+    uvicorn.run(app, host="0.0.0.0", port=(int(os.getenv("APP_PORT") or 8000)))
