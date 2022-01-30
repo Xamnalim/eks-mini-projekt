@@ -1,5 +1,5 @@
 const getEksBackendIp = () => {
-  return `http://${process.env.REACT_APP_EKS_BE_IP}:${process.env.REACT_APP_EKS_BE_PORT}`
+  return process.env.REACT_APP_API_URL
 }
 
 const fetchPosts = async () => {
