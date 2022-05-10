@@ -1,0 +1,15 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  creationTimestamp: null
+  labels:
+    app: eks-fe-deploy
+  name: guest-book
+spec:
+  port:
+    targetPort: 80
+  to:
+    kind: Service
+    name: eks-fe-svc
+    weight: null
+status:

@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: eks-be-deploy
+  name: eks-be-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: eks-be-deploy
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: eks-be-deploy
+    spec:
+      containers:
+      - image: image-registry.openshift-image-registry.svc:5000/labproj10/eks-backend:1.0
+        name: eks-be
+        ports:
+        - containerPort: 8000
+        resources: {}
+        volumeMounts:
+        envFrom:
+        - secretRef:
+            name: eks-be-secret
+status: {}

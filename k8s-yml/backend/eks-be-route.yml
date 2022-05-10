@@ -1,0 +1,15 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  creationTimestamp: null
+  labels:
+    app: eks-be-deploy
+  name: api
+spec:
+  port:
+    targetPort: 8000
+  to:
+    kind: Service
+    name: eks-be-svc
+    weight: null
+status:

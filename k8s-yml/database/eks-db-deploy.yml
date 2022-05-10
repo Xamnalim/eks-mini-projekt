@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: eks-db-deploy
+  name: eks-db-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: eks-db-deploy
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: eks-db-deploy
+    spec:
+      containers:
+      - image: image-registry.openshift-image-registry.svc:5000/labproj10/eks-db:1.0
+        name: eks-db
+        securityContext:
+          # runAsUser: 1000
+        ports:
+        - containerPort: 5432
+        resources: {}
+        volumeMounts:
+        # - mountPath: /var/lib/postgresql/data
+        #   name: postgres-storage
+        #   readOnly: false
+        - mountPath: /var/lib/postgresql/data
+          name: postgres-storage
+        envFrom:
+        - secretRef:
+            name: eks-db-secret
+        - configMapRef:
+            name: eks-db-cmap
+      volumes:
+      # - name: postgres-storage
+      #   persistentVolumeClaim:
+      #     claimName: eks-db-pvc
+      - name: postgres-storage
+        emptyDir: {}
+status: {}

@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: eks-fe-deploy
+  name: eks-fe-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: eks-fe-deploy
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: eks-fe-deploy
+    spec:
+      containers:
+      - image: image-registry.openshift-image-registry.svc:5000/labproj10/eks-frontend:1.0
+        name: eks-fe
+        ports:
+        - containerPort: 80
+        resources: {}
+        volumeMounts:
+        envFrom:
+        - configMapRef:
+            name: eks-fe-cmap
+status: {}
