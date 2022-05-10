@@ -27,9 +27,9 @@ function GuestBook() {
 
   return (
     <Container maxWidth="sm">
-      <Typography variant="h3">Weselna księga gości</Typography>
+      <Typography variant="h3">Wedding guest book</Typography>
         <NewPostForm onNewPost={addNewPost} />
-        <PostList title="Nasi goście:" posts={posts}/>
+        <PostList title="Our guests:" posts={posts}/>
     </Container>
   );
 }

@@ -11,11 +11,11 @@ export default function TokenList(props) {
       justifyContent="center"
       alignItems="center">
       <Grid item xs={12}>
-        <Typography mt={3} variant="h4">Dostępne tokeny:</Typography>
+        <Typography mt={3} variant="h4">Available tokens:</Typography>
       </Grid>
       {!tokens.length && (
         <Grid item xs={12}>
-          <Typography variant="h6">Brak tokenów</Typography>
+          <Typography variant="h6">No tokens are available. Please enter admin password to generate new tokens.</Typography>
         </Grid>
       )}
       <Grid item xs={12}>

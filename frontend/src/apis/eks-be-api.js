@@ -23,7 +23,7 @@ const createPost = async (content, signature, token) => {
     );
 
     if (res.status === 401) {
-      const err = new Error("Podane hasło jest nieaktualne!");
+      const err = new Error("Supplied password is out of date!");
       err.token_err = true;
       throw err;
     }
@@ -33,7 +33,7 @@ const createPost = async (content, signature, token) => {
 
     return await res.json();
   } catch (e) {
-    throw new Error(e.token_err ? e.message : "Nie udało się utworzyć wpisu");
+    throw new Error(e.token_err ? e.message : "Oops! Something went wrong.");
   }
 }
 
@@ -50,14 +50,14 @@ const createTokens = async (password, amount) => {
     );
 
     if (res.status === 401) {
-      const err = new Error("Podane hasło jest nieprawidłowe!");
+      const err = new Error("Wrong password");
       err.token_err = true;
       throw err;
     }
 
     return await res.json();
   } catch (e) {
-    throw new Error(e.token_err ? e.message : "Nie udało się utworzyć tokenów");
+    throw new Error(e.token_err ? e.message : "Oops! Something went wrong.");
   }
 }
 

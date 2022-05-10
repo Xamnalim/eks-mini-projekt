@@ -14,7 +14,7 @@ export default function AdminPage() {
 
   return (
     <Container maxWidth="sm">
-        <Typography variant="h3">Strona administratora</Typography>
+        <Typography variant="h3">Admin page</Typography>
         <AdminForm onSubmit={onSubmitHandle} />
         <TokenList tokens={tokens} />
     </Container>

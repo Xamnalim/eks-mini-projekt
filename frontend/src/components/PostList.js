@@ -14,7 +14,7 @@ export default function PostList(props) {
       </Grid>
       {!posts.length && (
         <Grid item xs={12}>
-          <Typography variant="h6">Nikt jeszcze nie dodał wpisu. Możesz być pierwszy/a!</Typography>
+          <Typography variant="h6">Nobody has added an entry yet. You can be the first!</Typography>
         </Grid>
       )}
       {posts.map((post, idx) => (

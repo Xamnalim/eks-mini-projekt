@@ -18,7 +18,7 @@ export default function AdminForm(props) {
       const { data } = await createTokens(password, amount);
       console.log(data);
       props.onSubmit(data);
-      enqueueSnackbar(`Operacja przebiegła pomyślnie!`, { variant: "success" });
+      enqueueSnackbar('Success!', { variant: "success" });
     } catch (e) {
       enqueueSnackbar(e.message, { variant: "error" });
     }
@@ -35,7 +35,7 @@ export default function AdminForm(props) {
             required
             id="amount"
             name="amount"
-            label="Ilość tokenów"
+            label="Token amount"
             fullWidth
             variant="standard"
             defaultValue={0}
@@ -48,7 +48,7 @@ export default function AdminForm(props) {
             required
             id="password"
             name="password"
-            label="Hasło"
+            label="Password"
             fullWidth
             variant="standard"
             type="password"
@@ -56,7 +56,7 @@ export default function AdminForm(props) {
         </Grid>
         <Grid item xs={12}>
           <Button variant="contained" type="submit">
-            Generuj tokeny
+            Generate
           </Button>
         </Grid>
       </Grid>

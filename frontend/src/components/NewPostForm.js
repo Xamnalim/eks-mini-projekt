@@ -17,7 +17,7 @@ export default function NewPostForm(props) {
     try {
       const { data } = await createPost(content, signature, token);
       props.onNewPost(data);
-      enqueueSnackbar("Wpis został utworzony", { variant: "success"});
+      enqueueSnackbar("New entry successfully created", { variant: "success"});
     } catch (e) {
       enqueueSnackbar(e.message, { variant: "error"});
     }
@@ -34,7 +34,7 @@ export default function NewPostForm(props) {
             required
             id="content"
             name="content"
-            label="Napisz coś miłego"
+            label="Write something nice"
             fullWidth
             variant="standard"
             autoComplete="off"
@@ -45,7 +45,7 @@ export default function NewPostForm(props) {
             required
             id="signature"
             name="signature"
-            label="Podpis"
+            label="Signature"
             fullWidth
             variant="standard"
             autoComplete="off"
@@ -56,14 +56,14 @@ export default function NewPostForm(props) {
             required
             id="token"
             name="token"
-            label="Hasło"
+            label="Password"
             fullWidth
             variant="standard"
           />
         </Grid>
         <Grid item xs={12}>
           <Button variant="contained" type="submit">
-            Dodaj wpis
+            Add
           </Button>
         </Grid>
       </Grid>
